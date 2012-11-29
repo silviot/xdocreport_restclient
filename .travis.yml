@@ -1,0 +1,9 @@
+language: python java
+python:
+  - 2.7
+install:
+  - python bootstrap.py
+  - ./bin/buildout
+  - java -jar parts/jettyrunner/jetty-runner-8.1.5.v20120716.jar src/xdocreport/REST-Service-Reporting-WebApplication/target/rest-service-reporting-1.0.0-SNAPSHOT.war
+script:
+  - bin/test xdocreport_restclient
