@@ -4,7 +4,7 @@ import zipfile
 import json
 import nose
 from StringIO import StringIO
-from xdocreport_restclient import invoke_service
+from xdocreport_restclient import invoke_service, get_info
 
 DOCUMENT_DIR = os.path.join(os.path.dirname(__file__), 'testdocuments')
 
@@ -60,3 +60,32 @@ def test_get_string_values():
         {'a': 1, 'b': {'c': {'d': 'hereami'}, 'e': 'a'}}
     )))
     nose.tools.assert_equal(res, ['a', 'hereami'])
+
+
+def test_get_info():
+    data = {
+     "project": {"name": "The big project"},
+     "developers": [
+      {
+       "lastName": "Leclercq",
+       "name": "Pascal"
+      },
+      {
+       "lastName": "Zerr",
+       "name": "Angelo"
+      },
+      {
+       "lastName": "Tomatis",
+       "name": "Silvio"
+      }
+     ]
+    }
+    res = tuple(get_info(data))
+    res = sorted(res, key=lambda x: x.name)
+    nose.tools.assert_equal(len(res), 3)
+    nose.tools.assert_equal(res[0].name, 'developers.lastName')
+    nose.tools.assert_equal(res[0].list, 'true')
+    nose.tools.assert_equal(res[1].name, 'developers.name')
+    nose.tools.assert_equal(res[1].list, 'true')
+    nose.tools.assert_equal(res[2].name, 'project.name')
+    nose.tools.assert_equal(res[2].list, 'false')

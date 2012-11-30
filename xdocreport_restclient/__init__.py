@@ -38,7 +38,6 @@ def get_info(data, path=[], islist='false'):
     "data is a dictionary. Return info about all keys named as paths"
     for key, value in data.items():
         currentpath = path + [key]
-        # islist = str(isinstance(value, list)).lower()
         if isinstance(value, dict):
             for info in get_info(value, currentpath, islist='false'):
                 yield info
@@ -50,24 +49,3 @@ def get_info(data, path=[], islist='false'):
 
 
 FieldInfo = namedtuple('FieldInfo', ['name', 'list'])
-
-
-def test_get_info():
-    data = {
-     "project": {"name": "The big project"},
-     "developers": [
-      {
-       "lastName": "Leclercq",
-       "name": "Pascal"
-      },
-      {
-       "lastName": "Zerr",
-       "name": "Angelo"
-      },
-      {
-       "lastName": "Tomatis",
-       "name": "Silvio"
-      }
-     ]
-    }
-    res = tuple(get_info(data))
