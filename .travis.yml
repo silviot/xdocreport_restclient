@@ -6,7 +6,7 @@ python:
 install:
   - sudo apt-get install python-setuptools
   - sudo easy_install distribute
-  - python bootstrap.py
+  - python bootstrap.py -d
   - ./bin/buildout
   - java -jar parts/jettyrunner/jetty-runner-8.1.5.v20120716.jar src/xdocreport/REST-Service-Reporting-WebApplication/target/rest-service-reporting-1.0.0-SNAPSHOT.war &
 script:
