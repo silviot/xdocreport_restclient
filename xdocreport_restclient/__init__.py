@@ -3,7 +3,7 @@ import json
 from collections import namedtuple
 
 
-def invoke_service(template, data, template_engine, document_type, output_type=None):
+def report(template, data, template_engine, document_type, output_type=None):
     url = 'http://127.0.0.1:8080/jaxrs/report'
     metadata = get_metadata(data)
     data = {
@@ -34,7 +34,6 @@ def get_metadata(data):
         result += [fieldtag, '</field>']
     result.append('</fields>')
     return '\n'.join(result)
-
 
 
 def get_info(data, path=[], islist='false'):

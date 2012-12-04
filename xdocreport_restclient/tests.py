@@ -5,7 +5,7 @@ import json
 import nose
 import collections
 from StringIO import StringIO
-from xdocreport_restclient import invoke_service, get_info
+from xdocreport_restclient import report, get_info
 
 DOCUMENT_DIR = os.path.join(os.path.dirname(__file__), 'testdocuments')
 
@@ -28,7 +28,7 @@ def make_method(filename):
         with open(datapath) as datapathfh:
             data = json.loads(datapathfh.read())
         with open(path) as fh:
-            res = invoke_service(template=fh, data=data, document_type=file_extension,
+            res = report(template=fh, data=data, document_type=file_extension,
                                  template_engine='Velocity')
         ziparchive = zipfile.ZipFile(StringIO(res), "r")
         if file_extension == 'odt':
@@ -46,7 +46,7 @@ def make_method(filename):
         for output_type in ('pdf', 'xhtml'):
             # generate a PDF and an html (smoke testing)
             with open(path) as fh:
-                res = invoke_service(template=fh, data=data, document_type=file_extension,
+                res = report(template=fh, data=data, document_type=file_extension,
                                      template_engine='Velocity', output_type=output_type)
             outpath = '.'.join(lowerpath.split('.')[:-1] + ['out', output_type])
             with open(outpath, 'w') as fh:
