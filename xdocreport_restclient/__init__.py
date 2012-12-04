@@ -3,19 +3,19 @@ import json
 from collections import namedtuple
 
 
-def invoke_service(template, data, data_type, template_engine):
+def invoke_service(template, data, template_engine, document_type):
     url = 'http://127.0.0.1:8080/jaxrs/report'
     metadata = get_metadata(data)
-    print metadata
     data = {
-        'dataType': data_type.upper(),
+        'dataType': 'JSON',
         'data': json.dumps(data),
         'templateEngineKind': template_engine,
         'metadata': metadata,
         'outFileName': 'foo',
         'download': 'true',
     }
-    files = {'templateDocument': template}
+    filename = 'foo.%s' % document_type
+    files = {'templateDocument': (filename, template)}
     result = requests.post(url, data, files=files)
     if result.status_code / 100 != 2:
         raise RuntimeError

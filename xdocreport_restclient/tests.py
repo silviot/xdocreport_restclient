@@ -3,6 +3,7 @@ import unittest
 import zipfile
 import json
 import nose
+import collections
 from StringIO import StringIO
 from xdocreport_restclient import invoke_service, get_info
 
@@ -21,19 +22,25 @@ def setUp(self):
 
 def make_method(filename):
     def test_report(self):
+        file_extension = filename.split('.')[-1]
         path = os.path.join(DOCUMENT_DIR, filename)
         datapath = os.path.join(DOCUMENT_DIR, filename + '.json')
         with open(datapath) as datapathfh:
             data = json.loads(datapathfh.read())
         with open(path) as fh:
-            res = invoke_service(template=fh, data=data,
-                                 data_type='JSON', template_engine='Velocity')
+            res = invoke_service(template=fh, data=data, document_type=file_extension,
+                                 template_engine='Velocity')
         ziparchive = zipfile.ZipFile(StringIO(res), "r")
-        xmldata = ziparchive.read("content.xml")
+        if file_extension == 'odt':
+            xmldata = ziparchive.read("content.xml")
+        elif file_extension == 'docx':
+            xmldata = ziparchive.read("word/document.xml")
+        else:
+            raise RuntimeError("%s is an unknown file" % filename)
         for string in get_string_values(data):
             self.assertTrue(str(string) in xmldata)
         outpath = os.path.join(DOCUMENT_DIR, filename.lower())
-        outpath = outpath.replace('.odt', '.out.odt')
+        outpath = '.'.join(outpath.split('.')[:-1] + ['out', file_extension])
         with open(outpath, 'w') as fh:
             fh.write(res)
 
@@ -41,7 +48,10 @@ def make_method(filename):
     return test_report
 
 for filename in os.listdir(DOCUMENT_DIR):
-    if filename.lower().endswith('.odt') and '.out.' not in filename:
+    if not '.' in filename:
+        continue
+    file_extension = filename.split('.')[-1]
+    if file_extension in ('odt', 'docx') and '.out.' not in filename:
         safe_filename = filename.replace('.', '_')
         setattr(TestClient, safe_filename, make_method(filename))
 
@@ -53,6 +63,10 @@ def get_string_values(dictionary):
         elif isinstance(value, dict):
             for val in get_string_values(value):
                 yield val
+        elif isinstance(value, collections.Iterable):
+            for outer in value:
+                for el in get_string_values(outer):
+                    yield el
 
 
 def test_get_string_values():
