@@ -39,10 +39,19 @@ def make_method(filename):
             raise RuntimeError("%s is an unknown file" % filename)
         for string in get_string_values(data):
             self.assertTrue(str(string) in xmldata)
-        outpath = os.path.join(DOCUMENT_DIR, filename.lower())
-        outpath = '.'.join(outpath.split('.')[:-1] + ['out', file_extension])
+        lowerpath = os.path.join(DOCUMENT_DIR, filename.lower())
+        outpath = '.'.join(lowerpath.split('.')[:-1] + ['out', file_extension])
         with open(outpath, 'w') as fh:
             fh.write(res)
+        for output_type in ('pdf', 'xhtml'):
+            # generate a PDF and an html (smoke testing)
+            with open(path) as fh:
+                res = invoke_service(template=fh, data=data, document_type=file_extension,
+                                     template_engine='Velocity', output_type=output_type)
+            outpath = '.'.join(lowerpath.split('.')[:-1] + ['out', output_type])
+            with open(outpath, 'w') as fh:
+                fh.write(res)
+
 
     test_report.__name__ = 'test_' + filename.replace('.', '_')
     return test_report

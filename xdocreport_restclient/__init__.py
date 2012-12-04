@@ -3,7 +3,7 @@ import json
 from collections import namedtuple
 
 
-def invoke_service(template, data, template_engine, document_type):
+def invoke_service(template, data, template_engine, document_type, output_type=None):
     url = 'http://127.0.0.1:8080/jaxrs/report'
     metadata = get_metadata(data)
     data = {
@@ -14,11 +14,14 @@ def invoke_service(template, data, template_engine, document_type):
         'outFileName': 'foo',
         'download': 'true',
     }
+    if output_type:
+        assert(output_type.upper() in ('PDF', 'XHTML'))
+        data['outFormat'] = output_type.upper()
     filename = 'foo.%s' % document_type
     files = {'templateDocument': (filename, template)}
     result = requests.post(url, data, files=files)
     if result.status_code / 100 != 2:
-        raise RuntimeError
+        raise RuntimeError()
     return result.content
 
 
