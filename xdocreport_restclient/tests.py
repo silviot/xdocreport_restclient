@@ -8,7 +8,7 @@ from StringIO import StringIO
 from xdocreport_restclient import report, get_info
 
 DOCUMENT_DIR = os.path.join(os.path.dirname(__file__), 'testdocuments')
-
+URL = "http://127.0.0.1:8080/jaxrs/report"
 
 class TestClient(unittest.TestCase):
     "One method will be attached for each odt file in testdocuments/"
@@ -28,7 +28,7 @@ def make_method(filename):
         with open(datapath) as datapathfh:
             data = json.loads(datapathfh.read())
         with open(path) as fh:
-            res = report(template=fh, data=data, document_type=file_extension,
+            res = report(URL, template=fh, data=data, document_type=file_extension,
                                  template_engine='Velocity')
         ziparchive = zipfile.ZipFile(StringIO(res), "r")
         if file_extension == 'odt':
@@ -46,12 +46,11 @@ def make_method(filename):
         for output_type in ('pdf', 'xhtml'):
             # generate a PDF and an html (smoke testing)
             with open(path) as fh:
-                res = report(template=fh, data=data, document_type=file_extension,
+                res = report(URL, template=fh, data=data, document_type=file_extension,
                                      template_engine='Velocity', output_type=output_type)
             outpath = '.'.join(lowerpath.split('.')[:-1] + ['out', output_type])
             with open(outpath, 'w') as fh:
                 fh.write(res)
-
 
     test_report.__name__ = 'test_' + filename.replace('.', '_')
     return test_report
