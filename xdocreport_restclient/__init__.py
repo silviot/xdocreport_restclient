@@ -3,7 +3,7 @@ import json
 from collections import namedtuple
 
 
-def xdoc_to_pdf(url, filehandle):
+def docx_to_pdf(url, filehandle):
     filecontents = filehandle.read()
     files = {'document': ('file.docx', filecontents)}
     data = {

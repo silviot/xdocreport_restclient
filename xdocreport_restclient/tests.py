@@ -5,7 +5,7 @@ import json
 import nose
 import collections
 from StringIO import StringIO
-from xdocreport_restclient import report, get_info, xdoc_to_pdf
+from xdocreport_restclient import report, get_info, docx_to_pdf
 
 DOCUMENT_DIR = os.path.join(os.path.dirname(__file__), 'testdocuments')
 REPORT_URL = "http://127.0.0.1:1300/jaxrs/report"
@@ -91,7 +91,7 @@ class TestConverter(unittest.TestCase):
         for filename in filter(lambda n: n.endswith('docx'), os.listdir(DOCUMENT_DIR)):
             path = os.path.join(DOCUMENT_DIR, filename)
             fh = open(path)
-            xdoc_to_pdf(CONVERT_URL, fh)  # smoke testing
+            docx_to_pdf(CONVERT_URL, fh)  # smoke testing
 
 
 def test_get_info():
