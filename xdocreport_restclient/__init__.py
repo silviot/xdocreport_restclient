@@ -4,8 +4,7 @@ from collections import namedtuple
 
 
 def docx_to_pdf(url, filehandle):
-    filecontents = filehandle.read()
-    files = {'document': ('file.docx', filecontents)}
+    files = {'document': ('file.docx', filehandle)}
     data = {
         'download': False,
         'outputFormat': 'PDF',

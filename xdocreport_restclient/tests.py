@@ -91,7 +91,8 @@ class TestConverter(unittest.TestCase):
         for filename in filter(lambda n: n.endswith('docx'), os.listdir(DOCUMENT_DIR)):
             path = os.path.join(DOCUMENT_DIR, filename)
             fh = open(path)
-            docx_to_pdf(CONVERT_URL, fh)  # smoke testing
+            result = docx_to_pdf(CONVERT_URL, fh)  # smoke testing
+            self.assertEqual(result[:4], '%PDF')
 
 
 def test_get_info():
