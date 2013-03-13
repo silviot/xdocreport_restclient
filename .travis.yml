@@ -8,7 +8,9 @@ install:
   - sudo easy_install distribute
   - python bootstrap.py -d
   - ./bin/buildout
-  - java -jar parts/jettyrunner/jetty-runner-8.1.5.v20120716.jar src/xdocreport/REST-Service-Reporting-WebApplication/target/rest-service-reporting-*.war &
-  - while ! nc -z localhost 8080; do sleep 1; done
+  - java -jar parts/jettyrunner/jetty-runner-8.1.5.v20120716.jar --port 1300 src/xdocreport/REST-Service-Reporting-WebApplication/target/rest-service-reporting-*.war &
+  - java -jar parts/jettyrunner/jetty-runner-8.1.5.v20120716.jar --port 1301 src/xdocreport/REST-Service-Converter-WebApplication/target/rest-service-converter-*.war &
+  - while ! nc -z localhost 1300; do sleep 1; done
+  - while ! nc -z localhost 1301; do sleep 1; done
 script:
   - bin/test xdocreport_restclient

@@ -3,6 +3,18 @@ import json
 from collections import namedtuple
 
 
+def xdoc_to_pdf(url, filehandle):
+    filecontents = filehandle.read()
+    files = {'document': ('file.docx', filecontents)}
+    data = {
+        'download': False,
+        'outputFormat': 'PDF',
+        'via': 'XWPF',
+    }
+    result = requests.post(url, data, files=files)
+    return result.content
+
+
 def report(url, template, data, template_engine, document_type, output_type=None):
     metadata = get_metadata(data)
     data = {
@@ -16,6 +28,7 @@ def report(url, template, data, template_engine, document_type, output_type=None
     if output_type:
         assert(output_type.upper() in ('PDF', 'XHTML'))
         data['outFormat'] = output_type.upper()
+    data['outFormat'] = 'pdf'
     filename = 'foo.%s' % document_type
     files = {'templateDocument': (filename, template)}
     result = requests.post(url, data, files=files)

@@ -5,10 +5,12 @@ import json
 import nose
 import collections
 from StringIO import StringIO
-from xdocreport_restclient import report, get_info
+from xdocreport_restclient import report, get_info, xdoc_to_pdf
 
 DOCUMENT_DIR = os.path.join(os.path.dirname(__file__), 'testdocuments')
-URL = "http://127.0.0.1:8080/jaxrs/report"
+REPORT_URL = "http://127.0.0.1:1300/jaxrs/report"
+CONVERT_URL = "http://127.0.0.1:1301/jaxrs/convert"
+
 
 class TestClient(unittest.TestCase):
     "One method will be attached for each odt file in testdocuments/"
@@ -28,7 +30,7 @@ def make_method(filename):
         with open(datapath) as datapathfh:
             data = json.loads(datapathfh.read())
         with open(path) as fh:
-            res = report(URL, template=fh, data=data, document_type=file_extension,
+            res = report(REPORT_URL, template=fh, data=data, document_type=file_extension,
                                  template_engine='Velocity')
         ziparchive = zipfile.ZipFile(StringIO(res), "r")
         if file_extension == 'odt':
@@ -46,7 +48,7 @@ def make_method(filename):
         for output_type in ('pdf', 'xhtml'):
             # generate a PDF and an html (smoke testing)
             with open(path) as fh:
-                res = report(URL, template=fh, data=data, document_type=file_extension,
+                res = report(REPORT_URL, template=fh, data=data, document_type=file_extension,
                                      template_engine='Velocity', output_type=output_type)
             outpath = '.'.join(lowerpath.split('.')[:-1] + ['out', output_type])
             with open(outpath, 'w') as fh:
@@ -82,6 +84,14 @@ def test_get_string_values():
         {'a': 1, 'b': {'c': {'d': 'hereami'}, 'e': 'a'}}
     )))
     nose.tools.assert_equal(res, ['a', 'hereami'])
+
+
+class TestConverter(unittest.TestCase):
+    def test_convert_to_pdf(self):
+        for filename in filter(lambda n: n.endswith('docx'), os.listdir(DOCUMENT_DIR)):
+            path = os.path.join(DOCUMENT_DIR, filename)
+            fh = open(path)
+            xdoc_to_pdf(CONVERT_URL, fh)  # smoke testing
 
 
 def test_get_info():
